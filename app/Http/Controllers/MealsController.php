@@ -39,6 +39,7 @@ class MealsController extends Controller
             'price' => 'required|numeric',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
+
         if(!$request->has('id'))
         {
             if($request->hasFile('image')){
@@ -57,12 +58,8 @@ class MealsController extends Controller
             {
                 return response()->json(['status'=>'success','message'=>'meal saved successfully']);
             }
-            return response()->json(['status'=>'error','message'=>'error while saving']);
         }
-        else
-        {
-            return response()->json(['status'=>'error','message'=>'still editing no']);
-        }
+        return response()->json(['status'=>'error','message'=>'error while saving']);
 
     }
 

@@ -70,7 +70,8 @@ $(document).ready(function () {
 
     $(document).on('click', '.deleteBtn', function() {
         const id = $(this).data('id');
-        const url = `${baseUrl}/admin/categories/${id}`;
+        const url = `${baseUrl}/dashboard/admin/categories/${id}`;
+
         Swal.fire({
             title: "Are you sure?",
             text: "Once deleted, You won't be able to revert this!",
@@ -82,7 +83,7 @@ $(document).ready(function () {
         }).then((result)=>{
             if(result.isConfirmed){
                 $.ajax({
-                    url:url,
+                    url: baseUrl + '/dashboard/admin/categories/' + id,
                     type:"DELETE",
                     success: function (response){
                         if (response.status === 'success')
@@ -131,6 +132,75 @@ $(document).ready(function () {
 
 });
 
+
+// فتح الـ Modal وتعبئة البيانات عند الضغط على Edit
+$(document).on('click', '.editBtn', function() {
+    const id = $(this).data('id');
+    $.ajax({
+        url: baseUrl + '/dashboard/admin/categories/' + id,
+        type: 'GET',
+        success: function(response) {
+            if (response.category) {
+                $('#editCategoryId').val(response.category.id);
+                $('#editCategoryName').val(response.category.name);
+                $('#editCategorySlug').val(response.category.slug);
+                $('#editCategoryModal').modal('show');
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Category not found'
+                });
+            }
+        },
+        error: function() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to fetch category data'
+            });
+        }
+    });
+});
+
+// عند حفظ التعديل في الـ Modal
+$(document).on('submit', '#editCategoryForm', function(e) {
+    e.preventDefault();
+    const id = $('#editCategoryId').val();
+    const dataForm = new FormData(this);
+    $.ajax({
+        url: baseUrl + '/dashboard/admin/categories',
+        type: 'POST',
+        data: dataForm,
+        contentType: false,
+        processData: false,
+        success: function(response) {
+            if (response.status === 'success') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Updated',
+                    text: response.message
+                });
+                $('#editCategoryModal').modal('hide');
+                fetchCategories();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: response.message
+                });
+            }
+        },
+        error: function() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to update category'
+            });
+        }
+    });
+});
+
 function fetchCategories() {
 
     $.ajax({
@@ -140,7 +210,7 @@ function fetchCategories() {
             const categories = response.categories;
             $("tbody").empty();
             categories.forEach(function (category){
-            const categoryRow = `
+                const categoryRow = `
             <tr>
                 <td>${category.name}</td>
                 <td>${category.slug}</td>
@@ -149,7 +219,7 @@ function fetchCategories() {
                     <a class="btn btn-sm btn-outline-danger deleteBtn" data-id= "${category.id}">Delete</a>
                 </td>
             </tr>`;
-            $("tbody").append(categoryRow);
+                $("tbody").append(categoryRow);
             });
         },
         error:function () {
