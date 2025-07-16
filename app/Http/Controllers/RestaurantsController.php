@@ -88,6 +88,7 @@ class RestaurantsController extends Controller
             'status' => 'error',
             'message' => 'errorrr'
         ]);
+
     }
 
     /**

@@ -54,5 +54,6 @@ Route::prefix('dashboard/admin')->middleware(['auth'])->group(function (){
     Route::get('/meals/by-restaurant/{id}',[\App\Http\Controllers\MealsController::class,'getByRestaurant'])->name('getByRestaurant');
 });
 
+Route::get('/order-food',[\App\Http\Controllers\HomeController::class,'index'])->name('home');
 
 require __DIR__.'/auth.php';
