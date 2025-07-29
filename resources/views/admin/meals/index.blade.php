@@ -1,5 +1,7 @@
 @extends('layouts.app')
 @section('title','New Meal')
+@section('style')
+    <link href="{{asset('assets/meals/css/style.css')}}" rel="stylesheet">
 @section('content')
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container">
@@ -15,9 +17,16 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{route('restaurants.index')}}">Restaurants</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Logout</a>
-                    </li>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item">
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="btn btn-link nav-link">Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                 </ul>
             </div>
         </div>
@@ -102,6 +111,42 @@
             </tbody>
         </table>
 
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Edit Meal Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form method="POST" id="editFormModal">
+                        @csrf
+                    <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Name:</label>
+                                <input type="text" class="form-control" id="name" name="name">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description:</label>
+                                <textarea class="form-control" id="description" name="description"></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="price" class="form-label">Price:</label>
+                                <input type="number" class="form-control" id="price" name="price">
+                            </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">close</button>
+                        <button type="submit" class="btn btn-primary" id="saveBtn">Save Changes</button>
+                    </div>
+                </form>
+
+                </div>
+            </div>
+        </div>
     </div>
 @endsection
 

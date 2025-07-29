@@ -57,12 +57,21 @@ $(document).ready(function () {
                         });
                     }
                 },
-                error: function () {
-                    Swal.fire({
-                        icon:"error",
-                        title:"Error",
-                        text:"An Error acquired while processing",
-                    });
+                error: function (xhr) {
+                    if (xhr.status === 422) {
+                        let errors = xhr.responseJSON.errors;
+                        let errorMessage = Object.values(errors).join('\n');
+                        Swal.fire({
+                            icon: 'error',
+                            title: errorMessage,
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'error',
+                            text: 'error happend while processing'
+                        });
+                    }
                 }
             });
         }

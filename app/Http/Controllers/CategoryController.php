@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -23,46 +24,49 @@ class CategoryController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
-        $request->validate([
-           'name' => 'required',
-           'slug' => 'required'
-        ]);
+        $validate = $request->validated();
+
         if($request->has('id'))
         {
             $category = Category::find($request->id);
             if(!$category)
             {
-                return response()->json(['status'=>'error','message'=>'can\'t find this category']);
+                return response()->json([
+                    'status'=>'error',
+                    'message'=>'can\'t find this category'
+                ]);
             }
             $category->update([
-                'name' => $request->name,
-                'slug' => Str::slug($request->slug)
+                'name' => $validate['name'],
+                'slug' => $validate['slug']
             ]);
 
-            return response()->json(['status'=>'success','message'=>'Updated successfully']);
+            return response()->json([
+                'status'=>'success',
+                'message'=>'Updated successfully'
+            ]);
         }
 
         $category = Category::create([
-            'name' => $request->name,
-            'slug' => Str::slug($request->slug)
+            'name' => $validate['name'],
+            'slug' => $validate['slug']
         ]);
         if($category)
         {
-            return response()->json(['status' => 'success','message'=>$category->name.' added successfully','category'=>$category]);
+            return response()->json([
+                'status' => 'success',
+                'message'=>$category->name.' added successfully',
+                'category'=>$category
+            ]);
         }
-        return response()->json(['status' => 'error','message'=>'failed to create ']);
+        return response()->json([
+            'status' => 'error',
+            'message'=>'failed to create '
+        ]);
     }
 
     /**

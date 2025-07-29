@@ -6,25 +6,32 @@
 @section('navbar')
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Talabat</a>
+            <a class="navbar-brand" href="{{route('order_food.home')}}">Talabat</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Contact Us</a>
-                    </li>
+                    @auth
+                        <li class="nav-item">
+                            <a class="nav-link active">Hello {{ auth()->user()->name }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{{ route('orders.show') }}">My Orders</a>
+                        </li>
+                    @endauth
                 </ul>
-                <ul class="navbar-nav">
+                <ul class="navbar-nav ms-auto">
+                    @auth
+                        <li class="nav-item">
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="btn btn-link nav-link">Logout</button>
+                            </form>
+                        </li>
+                    @endauth
                     <li class="nav-item">
-                        <a class="nav-link" href="#" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
+                        <a class="nav-link" href="#" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas">
                             <div class="cart-icon-container">
                                 <i class="fas fa-shopping-cart"></i> Cart
                                 <span class="cart-count" id="cart-item-count"></span>
@@ -51,26 +58,21 @@
                                             {{ $restaurant->name }} menu
                                         </button>
                                         <div class="collapse" id="mealsCollapse{{ $restaurant->id }}">
-                                            @if($restaurant->meals->count())
+                                            @forelse($restaurant->meals as $meal)
                                                 <ul class="list-group list-group-flush">
-                                                    @foreach($restaurant->meals as $meal)
-                                                        <li class="list-group-item meal-item">
-                                                            <div>
-                                                                <h4>{{ $meal->name }}</h4>
-                                                                <span class="price">{{ number_format($meal->price, 2) }}LE</span>
-                                                            </div>
-                                                            <button class="btn btn-success add-to-cart-btn"
-                                                                    data-meal-id="{{ $meal->id }}"
-                                                                    data-meal-name="{{ $meal->name }}"
-                                                                    data-meal-price="{{ $meal->price }}">
-                                                                Add to cart
-                                                            </button>
-                                                        </li>
-                                                    @endforeach
+                                                    <li class="list-group-item meal-item">
+                                                        <div>
+                                                            <h4>{{$meal->name}}</h4>
+                                                            <span class="price">{{number_format($meal->price,2)}}</span>
+                                                        </div>
+                                                        <button class="btn btn-success add-to-cart-btn" data-id="{{$meal->id}}">
+                                                            add to cart
+                                                        </button>
+                                                    </li>
                                                 </ul>
-                                            @else
-                                                <p class="no-meals">No Meals</p>
-                                            @endif
+                                                @empty
+                                                    <p class="no-meals">No Meals</p>
+                                                @endforelse
                                         </div>
                                     </div>
                                 </div>
@@ -88,21 +90,26 @@
                     <h5 class="offcanvas-title" id="cartOffcanvasLabel">Cart</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
+
+            @if(session()->has('cart'))
                 <div class="offcanvas-body">
                     <ul id="cart-items-list" class="list-group mb-3">
                         <!-- Cart items will be dynamically loaded here -->
                     </ul>
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="mb-0">Total</h5>
-                        <h5 class="mb-0" id="cart-total-price">$0.00</h5>
-                    </div>
-                    <button class="btn btn-primary w-100" id="checkout-button">Complete Order</button>
-                    <button class="btn btn-outline-danger w-100 mt-2" id="clear-cart-button">remove items</button>
+                    <button class="btn btn-primary w-100" id="placeorder-btn">Place Order</button>
+                    <button class="btn btn-outline-danger w-100 mt-2" id="clear-cart-button">Clear Cart</button>
                 </div>
+                @else
+                    <div class="offcanvas-body">
+                        <div class="d-flex justify-content-center align-items-center mb-3">
+                            <h5 class="mb-0">Cart is empty</h5>
+                        </div>
+                    </div>
+            @endif
             </div>
         </div>
     @endsection
 
 @section('scripts')
-    <script type="text/javascript" src="{{asset('/assets/customers/home/main.js')}}"></script>
+    <script type="text/javascript" src="{{asset('/assets/customers/home/cart.js')}}"></script>
 @endsection

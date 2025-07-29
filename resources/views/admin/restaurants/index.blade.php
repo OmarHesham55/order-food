@@ -23,6 +23,16 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{route('meals.index')}}">Meals</a>
                     </li>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item">
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="btn btn-link nav-link">Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                 </ul>
             </div>
         </div>

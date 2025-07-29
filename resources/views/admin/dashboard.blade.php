@@ -26,7 +26,7 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-4 mb-3">
+                    <div class="col-md-3 mb-3">
                         <div class="card border-primary">
                             <div class="card-body text-center">
                                 <h5 class="card-title">Categories</h5>
@@ -35,7 +35,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4 mb-3">
+                    <div class="col-md-3 mb-3">
                         <div class="card border-primary">
                             <div class="card-body text-center">
                                 <h5 class="card-title">Restaurants</h5>
@@ -44,12 +44,21 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4 mb-3">
+                    <div class="col-md-3 mb-3">
                         <div class="card border-primary">
                             <div class="card-body text-center">
                                 <h5 class="card-title">Meals</h5>
                                 <p class="card-text">Manage meals</p>
                                 <a href="{{route('meals.index')}}" class="btn btn-primary">Go to Meals</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card border-primary">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Orders</h5>
+                                <p class="card-text">Manage Orders</p>
+                                <a href="{{route('admin.orders.index')}}" class="btn btn-primary">Go to Orders</a>
                             </div>
                         </div>
                     </div>

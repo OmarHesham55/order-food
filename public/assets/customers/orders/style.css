@@ -1,0 +1,199 @@
+body {
+    font-family: 'Cairo', 'Inter', sans-serif;
+    background-color: #eef2f5;
+    color: #343a40;
+    line-height: 1.6;
+}
+.navbar {
+    background-color: #007bff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+.navbar-brand, .nav-link {
+    color: #ffffff !important;
+    font-weight: 600;
+}
+.navbar-brand:hover, .nav-link:hover {
+    color: #e0e0e0 !important;
+}
+.cart-icon-container {
+    position: relative;
+    display: inline-block;
+}
+.cart-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    /*background-color: #dc3545;*/
+    color: white;
+    border-radius: 50%;
+    padding: 2px 7px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    line-height: 1;
+    min-width: 20px;
+    text-align: center;
+}
+.container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+h1 {
+    font-family: 'Cairo', sans-serif;
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 3rem;
+    font-weight: 700;
+    position: relative;
+    padding-bottom: 15px;
+}
+h1::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background-color: #007bff;
+    border-radius: 2px;
+}
+
+.restaurant-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.restaurant-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+}
+.restaurant-card .card-body {
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+.restaurant-name {
+    font-family: 'Cairo', sans-serif;
+    color: #34495e;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e9ecef;
+}
+.restaurant-card .card-text {
+    color: #6c757d;
+    font-size: 1rem;
+    margin-bottom: 20px;
+}
+
+.meal-list {
+    margin-top: 20px;
+    padding-top: 15px;
+    flex-grow: 1;
+}
+.meal-list h3 {
+    font-family: 'Cairo', sans-serif;
+    color: #495057;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+.meal-item {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+.meal-item h4 {
+    font-family: 'Cairo', sans-serif;
+    color: #007bff;
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 0;
+    flex-basis: 65%;
+}
+.meal-item .price {
+    font-family: 'Inter', sans-serif;
+    color: #28a745;
+    font-size: 1.15rem;
+    font-weight: 700;
+    flex-basis: 30%;
+    text-align: left;
+}
+.add-to-cart-btn {
+    font-size: 0.9rem;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+.no-meals {
+    color: #6c757d;
+    font-style: italic;
+    text-align: center;
+    padding: 15px;
+    background-color: #e9ecef;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+.no-restaurants {
+    color: #dc3545;
+    text-align: center;
+    font-size: 1.6rem;
+    padding: 30px;
+    background-color: #ffe0e6;
+    border-radius: 12px;
+    border: 1px solid #ffb3c1;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        margin: 20px;
+        padding: 15px;
+    }
+    h1 {
+        font-size: 2.2rem;
+        margin-bottom: 30px;
+    }
+    h1::after {
+        width: 60px;
+    }
+    .restaurant-name {
+        font-size: 1.6rem;
+    }
+    .meal-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .meal-item h4, .meal-item .price {
+        flex-basis: 100%;
+        text-align: right;
+    }
+    .meal-item .price {
+        margin-top: 8px;
+    }
+    .add-to-cart-btn {
+        width: 100%;
+    }
+    .no-restaurants {
+        font-size: 1.2rem;
+        padding: 20px;
+    }
+}

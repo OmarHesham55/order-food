@@ -111,11 +111,12 @@ $(document).ready(function() {
                             <td>
                             <img src="${imgePath}" width="50" alt="Meal Image" class="rounded-circle">
                             </td>
-                            <td>${meal.name}</td>
-                            <td>${meal.price}</td>
-                            <td>${meal.description}</td>
+                            <td data-name="${meal.name}">${meal.name}</td>
+                            <td data-price="${meal.price}">${meal.price}</td>
+                            <td data-description="${meal.description}">${meal.description}</td>
                             <td>
-                                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill mx-1 editBtn" data-id=${meal.id}>
+                                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill mx-1 editBtn"
+                                data-id=${meal.id} data-bs-toggle="modal" data-bs-target="#editModal">
                                     <i class="bi bi-pencil-square">Edit</i>
                                 </button>
                                 <button type="button" class="btn btn-sm btn-outline-danger deleteBtn rounded-pill mx-1" data-id=${meal.id}>
@@ -138,6 +139,57 @@ $(document).ready(function() {
             }
         });
     });
+    let editMealId = null;
+    $(document).on("click",".editBtn",function (){
+        editMealId = $(this).data("id");
+        let row = $(this).closest('tr');
+        let modal = document.getElementById("editModal");
+        let name = row.find('td[data-name]').data('name');
+        let price = row.find('td[data-price]').data('price');
+        let description = row.find('td[data-description]').data('description');
+        $("#name").val(name);
+        $("#price").val(price);
+        $("#description").val(description);
+    });
+
+    $("#editFormModal").on('submit',function (e){
+        e.preventDefault();
+        let formData = new FormData(this)
+        // formData.append('meal_id',editMealId);
+        formData.append('_method','PUT')
+        $.ajax({
+            url:`${baseUrl}/dashboard/admin/meals/${editMealId}`,
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                if (response.status === 'success'){
+                    Swal.fire({
+                        icon:"success",
+                        title:'Success',
+                        text:response.message,
+                        timer:1000
+                    });
+                    const modalElement = document.getElementById('editModal');
+                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                    modalInstance.hide();
+                    location.reload();
+                }
+                else
+                {
+                    Swal.fire({
+                        icon:'error',
+                        title:'Error',
+                        text:"Something went happen",
+                        timer:1000
+                    });
+                }
+            }
+        })
+    });
+
+
 
     $(document).on("click", ".deleteBtn", function () {
         let mealId = $(this).data("id");
@@ -158,7 +210,7 @@ $(document).ready(function() {
                     success: function(response) {
                         if (response.status === 'success') {
                             Swal.fire("Deleted", response.message, "success");
-                            row.remove(); // حذف الصف من الجدول
+                            row.remove();
                         } else {
                             Swal.fire("error", "Can't delete it", "error");
                         }
@@ -170,12 +222,10 @@ $(document).ready(function() {
             }
         });
     });
-
 });
 
 
 // ************************* Custom Jquery Validation ************************* //
-
 $.validator.addMethod("imageType", function(value, element) {
     if (element.files.length === 0) return true; // skip if no file
     let type = element.files[0].type;

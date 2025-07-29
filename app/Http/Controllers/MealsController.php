@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MealRequest;
 use App\Models\Meal;
 use App\Models\Restaurant;
+use App\Services\ImageUploadService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class MealsController extends Controller
 {
@@ -19,72 +22,51 @@ class MealsController extends Controller
         return view('admin.meals.index',compact('meals','restaurants'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(MealRequest $request)
     {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string',
-            'description' => 'required|string',
-            'restaurant_id' => 'required|exists:restaurants,id',
-            'price' => 'required|numeric',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
-        ]);
-
-        if(!$request->has('id'))
-        {
-            if($request->hasFile('image')){
-                $imageName = time() . '.' . $request->image->extension();
-                $request->image->move(public_path('assets/meals/uploads/'),$imageName);
-                $request->image = $imageName;
-            }
-            $meal = Meal::create([
-                'name' => $request->name,
-                'price' => $request->price,
-                'description' => $request->description,
-                'image' => $request->image,
-                'restaurant_id' => $request->restaurant_id
-            ]);
-            if($meal)
-            {
-                return response()->json(['status'=>'success','message'=>'meal saved successfully']);
-            }
+        $imageName = null;
+        if($request->hasFile('image')){
+            $imageName = ImageUploadService::handleImageUpload($request->image,'assets/meals/uploads/');
         }
+        $meal = Meal::create([
+            'name' => $request->name,
+            'price' => $request->price,
+            'description' => $request->description,
+            'image' => $imageName,
+            'restaurant_id' => $request->restaurant_id
+        ]);
+        if($meal)
+        {
+            return response()->json(['status'=>'success','message'=>'meal saved successfully']);
+        }
+
         return response()->json(['status'=>'error','message'=>'error while saving']);
-
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Meal $meal)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Meal $meal)
-    {
-        //
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Meal $meal)
+    public function update(Request $request,$id)
     {
-        //
+        $request->validate([
+            'name' => 'required|string',
+            'description' => 'required|string',
+            'price' => 'required|numeric|min:0'
+        ]);
+
+        $meal = Meal::findOrFail($id);
+        $meal->update([
+            'name' => $request->name,
+            'price' => $request->price,
+            'description' => $request->description
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Updated successfully'
+        ]);
+
     }
 
     /**
@@ -94,9 +76,8 @@ class MealsController extends Controller
     {
         if($meal)
         {
-            if($meal->image && file_exists(public_path('assets/meals/uploads/' . $meal->image)))
-            {
-                unlink(public_path('assets/meals/uploads/' . $meal->image));
+            if ($meal->image && File::exists(public_path('assets/meals/uploads/' . $meal->image))) {
+                File::delete(public_path('assets/restaurants/uploads/' . $meal->image));
             }
             $meal->delete();
             return response()->json([
@@ -108,11 +89,6 @@ class MealsController extends Controller
             'status' => 'error',
             'message' => 'failed to delete'
         ]);
-    }
-
-    public function saveMeal(Request $request , $id)
-    {
-
     }
 
     public function getByRestaurant($id)
