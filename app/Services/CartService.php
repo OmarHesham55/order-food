@@ -2,7 +2,12 @@
 
 namespace App\Services;
 
+use App\Mail\OrderPlacedMail;
 use App\Models\Meal;
+use App\Models\Order;
+use App\Models\OrderItem;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 
 class CartService
@@ -55,5 +60,61 @@ class CartService
             $total += $item['quantity'] * $item['price'];
         }
         return $total;
+    }
+    public function placeOrder($userId,$restaurantId)
+    {
+        $cart = $this->getCart();
+        $mealIds = array_keys($cart);
+
+        if(empty($cart)) {
+            return [
+                'status' => 'error',
+                'message' => 'cart is empty'
+            ];
+        }
+
+
+        $validMealIds = Meal::whereIn('id',$mealIds)->pluck('id')->toArray();
+        $invalidMeals = array_diff($mealIds,$validMealIds);
+
+        if(count($invalidMeals) > 0) {
+            return [
+                'status' => 'error',
+                'message' => 'some meals are invalid',
+                'invalidIds' => $invalidMeals
+            ];
+        }
+
+        $total = $this->calculateItems($cart);
+
+        $order = Order::create([
+            'user_id' => $userId,
+            'restaurant_id' => $restaurantId,
+            'status' => 'pending',
+            'total_price' => $total,
+            'address' => 'default address'
+        ]);
+        foreach ($cart as $mealId => $item)
+        {
+            OrderItem::create([
+               'order_id' => $order->id,
+               'meal_id' => $mealId,
+               'quantity' => $item['quantity'],
+               'price' => $item['price']
+            ]);
+        }
+        $this->clearCart();
+
+        Mail::to("omarhisham32@gmail.com")
+            ->queue(new OrderPlacedMail([
+                'id' => $order->id,
+                'total_price' => $order->total_price,
+            ]));
+
+        return [
+            'status' => 'success',
+            'order_id' => $order->id
+        ];
+
     }
 }

@@ -33,7 +33,8 @@ $(document).ready(function (){
                 number: "Number only is required"
             },
             image: {
-                required:"image is required"
+                required:"image is required",
+                imageSize: "Image size must be less than 2.5MB"
             },
             restaurant_id: {
                 required: "required"
@@ -58,7 +59,6 @@ $(document).ready(function (){
                             text: response.message
                         });
                         $('#meal-form')[0].reset();
-                        // $('#meals-table').DataTable().ajax.relode();
                         }
                         else
                         {
@@ -154,9 +154,11 @@ $(document).ready(function() {
 
     $("#editFormModal").on('submit',function (e){
         e.preventDefault();
+
         let formData = new FormData(this)
-        // formData.append('meal_id',editMealId);
+
         formData.append('_method','PUT')
+
         $.ajax({
             url:`${baseUrl}/dashboard/admin/meals/${editMealId}`,
             type: 'POST',

@@ -41,10 +41,13 @@ class CartController extends Controller
 public function getCartItems()
 {
     $cart = $this->cartService->getCart();
+
     $total = $this->cartService->calculateItems($cart);
+
     return response()->json([
         'status'=>'success',
         'cart' => $cart,
+        'cart_count' => array_sum(array_column($cart,'quantity')),
         'total' => number_format($total,2)
     ]);
 }
@@ -62,6 +65,7 @@ public function removeItem(Request $request)
     return response()->json([
         'status' => 'success',
         'cart' => $cart,
+        'cart_count' => array_sum(array_column($cart,'quantity')),
         'total' =>$total
     ]);
 }
@@ -74,58 +78,23 @@ public function placeOrder(Request $request){
                 'message' => 'You are not authorized to place order'
             ]);
         }
+        $validated = $request->validate([
+        'restaurant_id' => 'required|exists:restaurants,id'
+        ]);
 
-        $cart = $this->cartService->getCart();
-        if(empty($cart))
-        {
+        $result = $this->cartService->placeOrder(Auth::id(),$validated['restaurant_id']);
+        if ($result['status'] === 'success') {
             return response()->json([
-                'status' => 'error',
-                'message' => 'cart is empty'
+                'status' => 'success',
+                'order_id' => $result['order_id']
             ]);
         }
-        $mealIds = array_keys($cart);
-        $validMealIds = Meal::whereIn('id',$mealIds)->pluck('id')->toArray();
-        $invalidMeals = array_diff($mealIds,$validMealIds);
-        if(count($invalidMeals) > 0){
+
         return response()->json([
             'status' => 'error',
-            'message' => 'some meals are invalid',
-            'invalidIds' => $invalidMeals
-            ]);
-        }
-    $validated = $request->validate([
-        'restaurant_id' => 'required|exists:restaurants,id'
-    ]);
-
-        $total = $this->cartService->calculateItems($cart);
-        $order = Order::create([
-        'user_id' => Auth::id(),
-        'restaurant_id' => $validated['restaurant_id'],
-        'status' => 'pending',
-        'total_price' => $total,
-        'address' => 'default address'
-    ]);
-    foreach ($cart as $mealId => $item) {
-        OrderItem::create([
-           'order_id' => $order->id,
-           'meal_id' => $mealId,
-           'quantity' => $item['quantity'],
-           'price' => $item['price']
+            'message' => $result['message'],
         ]);
     }
-    $this->cartService->clearCart();
-
-    Mail::to("omarhisham32@gmail.com")
-        ->queue(new OrderPlacedMail([
-            'id' => $order->id,
-            'total_price' => $order->total_price,
-        ]));
-
-    return response()->json([
-        'status' => 'success',
-        'order_id' => $order->id
-    ]);
-}
 
 
 

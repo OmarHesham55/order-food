@@ -6,15 +6,18 @@ use App\Http\Requests\MealRequest;
 use App\Models\Meal;
 use App\Models\Restaurant;
 use App\Services\ImageUploadService;
+use App\Services\MealService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 
 class MealsController extends Controller
 {
+    protected $service;
+    public function __construct(MealService $service)
+    {
+        $this->service = $service;
+    }
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Meal $meal)
     {
         $restaurants = Restaurant::all();
@@ -24,49 +27,30 @@ class MealsController extends Controller
 
     public function store(MealRequest $request)
     {
-
-        $imageName = null;
-        if($request->hasFile('image')){
-            $imageName = ImageUploadService::handleImageUpload($request->image,'assets/meals/uploads/');
-        }
-        $meal = Meal::create([
-            'name' => $request->name,
-            'price' => $request->price,
-            'description' => $request->description,
-            'image' => $imageName,
-            'restaurant_id' => $request->restaurant_id
-        ]);
-        if($meal)
-        {
-            return response()->json(['status'=>'success','message'=>'meal saved successfully']);
-        }
-
-        return response()->json(['status'=>'error','message'=>'error while saving']);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request,$id)
-    {
-        $request->validate([
-            'name' => 'required|string',
-            'description' => 'required|string',
-            'price' => 'required|numeric|min:0'
-        ]);
-
-        $meal = Meal::findOrFail($id);
-        $meal->update([
-            'name' => $request->name,
-            'price' => $request->price,
-            'description' => $request->description
-        ]);
+        $meal = $this->service->create($request->validated());
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Updated successfully'
-        ]);
+            'message' => 'Meal Created Successfully',
+        ],200);
 
+    }
+
+    public function update(MealRequest $request,$id)
+    {
+        $meal = Meal::findOrFail($id);
+
+        $updated = $this->service->update($request->validated(),$meal);
+
+        return $updated
+            ? response()->json([
+                'status' => 'success',
+                'message' => 'Updated successfully'
+            ])
+            : response()->json([
+                'status' => 'error',
+                'message' => 'Failed to update'
+            ], 500);
     }
 
     /**
@@ -74,21 +58,17 @@ class MealsController extends Controller
      */
     public function destroy(Meal $meal)
     {
-        if($meal)
-        {
-            if ($meal->image && File::exists(public_path('assets/meals/uploads/' . $meal->image))) {
-                File::delete(public_path('assets/restaurants/uploads/' . $meal->image));
-            }
-            $meal->delete();
-            return response()->json([
+        $deleted = $this->service->delete($meal);
+
+        return $deleted
+            ? response()->json([
                 'status' => 'success',
                 'message' => 'deleted successfully'
-            ]);
-        }
-        return response()->json([
-            'status' => 'error',
-            'message' => 'failed to delete'
-        ]);
+            ])
+            : response()->json([
+                'status' => 'error',
+                'message' => 'failed to delete'
+            ],500);
     }
 
     public function getByRestaurant($id)

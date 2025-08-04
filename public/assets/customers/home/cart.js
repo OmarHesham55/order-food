@@ -12,7 +12,6 @@ $(document).ready(function (e){
         let currentRestaurantId = sessionStorage.getItem("restaurant_id");
         if(currentRestaurantId && currentRestaurantId !== restaurantId.toString())
         {
-
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
@@ -27,18 +26,18 @@ $(document).ready(function (e){
                 meal_id:mealId,
             },
             success: function (response){
-                console.log("cart response",response.cart);
-
               if(response.status === 'success')
               {
                   sessionStorage.setItem("restaurant_id",restaurantId);
+                  sessionStorage.setItem('cart_count',response.cart_count);
                   $("#cart-item-count").text(response.cart_count);
+                  loadCart();
                   Swal.fire({
                       icon: 'success',
                       title: 'Success',
                       text: 'Meal added successfully'
                   });
-                  loadCart();
+
               }
             },
         });
@@ -73,6 +72,10 @@ $(document).ready(function (e){
                         cartHtml += `<p><strong>Total: ${total} LE</strong></p>`;
                     }
                         $("#cart-items-list").html(cartHtml);
+                    if(response.cart_count !== undefined) {
+                        $('#cart-item-count').text(response.cart_count);
+                        sessionStorage.setItem("cart_count", response.cart_count);
+                    }
                 }
             }
         });
@@ -96,6 +99,7 @@ $(document).ready(function (e){
                     if (count === 0)
                     {
                         sessionStorage.removeItem("restaurant_id");
+                        sessionStorage.removeItem("cart_count");
                     }
                 }
             },
@@ -135,10 +139,11 @@ $(document).ready(function (e){
     $("#clear-cart-button").click(function (){
         $.ajax({
             url:`${baseUrl}/order_food/cart_clear`,
-            type:"get",
+            type:"POST",
             success: function (response) {
                 if(response.status === 'success'){
                     sessionStorage.removeItem("restaurant_id");
+                    sessionStorage.removeItem('cart_count');
                     loadCart();
                     $("#cart-item-count").text(0);
                     Swal.fire({

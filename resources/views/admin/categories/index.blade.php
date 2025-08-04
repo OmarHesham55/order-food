@@ -50,16 +50,10 @@
                         <label for="name" class="form-label">Category Name</label>
                         <input type="text" class="form-control" id="name" name="name" placeholder="Enter category name" required>
                     </div>
-                    @if($errors->has('name'))
-                        <div class="alert alert-danger">{{ $errors->first('name') }}</div>
-                    @endif
                     <div class="mb-3">
                         <label for="slug" class="form-label">Slug</label>
                         <input type="text" class="form-control" id="slug" name="slug" placeholder="Enter slug (e.g., category-name)" required>
                     </div>
-                    @if($errors->has('slug'))
-                        <div class="alert alert-danger">{{ $errors->first('slug') }}</div>
-                    @endif
                     <div class="d-flex justify-content-end">
                         <button type="submit" class="btn btn-primary" id="addCategory">Add Category</button>
                     </div>
@@ -116,7 +110,6 @@
             </form>
         </div>
     </div>
-
 </div>
 @endsection
 @section('scripts')

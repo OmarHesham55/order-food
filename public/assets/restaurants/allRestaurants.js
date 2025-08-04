@@ -125,7 +125,7 @@ $(document).on("submit","#editRestaurantForm",function (e) {
                         Swal.fire({
                             icon:"error",
                             title:"error",
-                            text:"updating error",
+                            text:"failed to update",
                         });
                     }
                 },
@@ -135,7 +135,6 @@ $(document).on("submit","#editRestaurantForm",function (e) {
                         title:"error",
                         text:"an error acquired while processing"
                     });
-                    console.log(xhr.responseText);
                 }
             });
         }

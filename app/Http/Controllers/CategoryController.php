@@ -9,23 +9,21 @@ use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
+
+    public function index()
     {
-        if($request->ajax())
-        {
-            $categories = Category::all();
-            return response()->json(['categories'=>$categories]);
-        }
-        $categories = Category::all();
-        return view('admin.categories.index',compact('categories'));
+        return view('admin.categories.index');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    public function getData()
+    {
+        $categories = Category::all();
+        return response()->json([
+            'message' => 'success',
+            'categories' => $categories
+        ],200);
+    }
+
     public function store(StoreCategoryRequest $request)
     {
         $validate = $request->validated();
@@ -69,30 +67,28 @@ class CategoryController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show($id)
     {
         $category = Category::find($id);
-        if ($category) {
-            return response()->json(['category' => $category]);
-        }
-        return response()->json(['message' => 'Category not found'], 404);
+        return $category
+            ? response()->json(['category' => $category],200)
+            : response()->json(['message' => 'Category not found'],404);
     }
 
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Category $category)
     {
-
-        if($category)
-        {
+        try {
             $category->delete();
-            return response()->json(['status' => 'success','message'=>'deleted successfully']);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Deleted Successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'=>'error',
+                'message'=>'failed to delete'
+            ]);
+
         }
-        return response()->json(['status'=>'error','message'=>'failed to delete']);
     }
 }

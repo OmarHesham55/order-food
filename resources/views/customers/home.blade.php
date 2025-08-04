@@ -91,7 +91,6 @@
                     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
 
-            @if(session()->has('cart'))
                 <div class="offcanvas-body">
                     <ul id="cart-items-list" class="list-group mb-3">
                         <!-- Cart items will be dynamically loaded here -->
@@ -99,13 +98,7 @@
                     <button class="btn btn-primary w-100" id="placeorder-btn">Place Order</button>
                     <button class="btn btn-outline-danger w-100 mt-2" id="clear-cart-button">Clear Cart</button>
                 </div>
-                @else
-                    <div class="offcanvas-body">
-                        <div class="d-flex justify-content-center align-items-center mb-3">
-                            <h5 class="mb-0">Cart is empty</h5>
-                        </div>
-                    </div>
-            @endif
+
             </div>
         </div>
     @endsection

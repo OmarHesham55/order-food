@@ -142,7 +142,6 @@ $(document).ready(function () {
 });
 
 
-// فتح الـ Modal وتعبئة البيانات عند الضغط على Edit
 $(document).on('click', '.editBtn', function() {
     const id = $(this).data('id');
     $.ajax({
@@ -172,7 +171,6 @@ $(document).on('click', '.editBtn', function() {
     });
 });
 
-// عند حفظ التعديل في الـ Modal
 $(document).on('submit', '#editCategoryForm', function(e) {
     e.preventDefault();
     const id = $('#editCategoryId').val();
@@ -211,9 +209,8 @@ $(document).on('submit', '#editCategoryForm', function(e) {
 });
 
 function fetchCategories() {
-
     $.ajax({
-        url: baseUrl + '/dashboard/admin/categories',
+        url: `${baseUrl}/dashboard/admin/categories/get-data`,
         type: 'GET',
         success: function (response){
             const categories = response.categories;

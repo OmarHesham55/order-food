@@ -80,8 +80,8 @@
                         </select>
                     </div>
                     <div class="col-12 text-end">
-                        <button type="submit" class="btn btn-success btn-lg mt-3">
-                            <i class="fas fa-save me-2"></i>add meal
+                        <button type="submit" class="btn btn-primary btn-md ">
+                            <i class=""></i>add meal
                         </button>
                     </div>
                 </form>
@@ -119,7 +119,7 @@
                         <h5 class="modal-title" id="editModalLabel">Edit Meal Details</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form method="POST" id="editFormModal">
+                    <form method="POST" id="editFormModal" enctype="multipart/form-data">
                         @csrf
                     <div class="modal-body">
                             <div class="mb-3">
@@ -135,6 +135,11 @@
                             <div class="mb-3">
                                 <label for="price" class="form-label">Price:</label>
                                 <input type="number" class="form-control" id="price" name="price">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="image" class="form-label">Image:</label>
+                                <input type="file" class="form-control" id="image" name="image" accept=".jpeg,.jpg,.png">
                             </div>
                     </div>
 

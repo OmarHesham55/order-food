@@ -77,6 +77,7 @@ Route::prefix('/dashboard/admin')->middleware(['auth'])->group(function (){
         ->name('categories.')
         ->group(function (){
         Route::get('/','index')->name('index');
+        Route::get('/get-data','getData');
         Route::post('/','store')->name('store');
         Route::get('/{id}','show')->name('show');
         Route::delete('/{category}','destroy')->name('destroy');
@@ -101,10 +102,8 @@ Route::prefix('/dashboard/admin')->middleware(['auth'])->group(function (){
 
     /* Admin Orders */
     Route::get('/all_orders',[\App\Http\Controllers\OrderAdminController::class,'index'])
-        ->middleware(['auth'])
         ->name('admin.orders.index');
     Route::post('/orders/update_order',[\App\Http\Controllers\OrderAdminController::class,'orderStatus'])
-        ->middleware(['auth'])
         ->name('admin.update.order');
 });
 
